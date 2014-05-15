@@ -6,8 +6,9 @@ Adafruit Microphone Amplifier
 const int sampleWindow = 100; // Sample window width in mS (50 mS = 20Hz)
 unsigned int sample;
 int val=0;
-int upperLimit=512;
-int lowerLimit=0;
+int upperLimit=0;
+int lowerLimit=1024;
+
 
 void setup() 
 {
@@ -35,16 +36,24 @@ void loop()
          if (sample > signalMax)
          {
             signalMax = sample;  // save just the max levels
+            if(signalMax>upperLimit)
+            {
+             upperLimit=signalMax; 
+            }
          }
          else if (sample < signalMin)
          {
             signalMin = sample;  // save just the min levels
+            if(sample<lowerLimit)
+            {
+             lowerLimit=sample; 
+            }
          }
       }
    }
    peakToPeak = signalMax - signalMin;  // max - min = peak-peak amplitude
-   constrain(peakToPeak, lowerLimit, upperLimit);
+   //constrain(peakToPeak, lowerLimit, upperLimit);
    val = map(peakToPeak, lowerLimit, upperLimit, 0, 255);
-   //analogWrite(0, val);
+   analogWrite(0, val);
    analogWrite(1, 255-val);
 }
